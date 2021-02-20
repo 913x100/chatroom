@@ -20,7 +20,8 @@ import (
 	//
 	//    sw "github.com/myname/myrepo/go"
 	//
-	sw "./go"
+
+	sw "chatroom/go"
 )
 
 func main() {

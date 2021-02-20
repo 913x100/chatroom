@@ -10,15 +10,46 @@
 package swagger
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(200)
+
+	channel := make(chan Body)
+	client := Client{channel}
+
+	addChan <- client
+
+	for {
+		message := <-channel
+		data, _ := json.Marshal(message)
+		if _, error := w.Write([]byte("data: " + string(data) + "\n\n")); error != nil {
+			log.Print("Write: ", error)
+			break
+		}
+		w.(http.Flusher).Flush()
+	}
+
+	removeChan <- client
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	body, _ := ioutil.ReadAll(r.Body)
+
+	var msg Body
+	json.Unmarshal(body, &msg)
+
+	messagesChan <- msg
+
 	w.WriteHeader(http.StatusOK)
 }
