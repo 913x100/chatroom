@@ -14,7 +14,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch(URL)
+    const headers = { 'Content-Type': 'application/json' }
+
+    fetch(URL, { headers })
       .then(res => res.json())
       .then(data => {
         setList({ name: data.name, message: data.message })
@@ -43,7 +45,7 @@ function App() {
     }).then((res) => {
       if (res.status === 200) {
         setInput("");
-        isSubmit = true
+        setIsSubmit(true)
       }
     }).catch((error) => {
 
