@@ -1,39 +1,39 @@
 package swagger
 
-import "chatroom/broker"
+import "log"
 
 type Client struct {
-	Channel chan <- Body
+	Channel chan<- Body
 }
 
 var messagesChan chan Body
 var addChan chan Client
 var removeChan chan Client
 
-func init {
+func init() {
 	messagesChan := make(chan Body)
-	addChan      := make(chan Client)
-	removeChan   := make(chan Client)
+	addChan := make(chan Client)
+	removeChan := make(chan Client)
 
 	go handleMessages(messagesChan, addChan, removeChan)
 }
 
-func handleMessages(messageChan <- chan Body, addChan <- chan Client, removeChan <- chan Client) {
-	channels := make(map[Client] chan <- Body)
+func handleMessages(messageChan <-chan Body, addChan <-chan Client, removeChan <-chan Client) {
+	channels := make(map[Client]chan<- Body)
 
 	for {
 		select {
-		case message := <- messageChan:
-			log.Print("New message: ", message.Body)
+		case message := <-messageChan:
+			log.Print("New message: ", message.Message)
 			for _, channel := range channels {
-				go func (c chan <- Message) {
+				go func(c chan<- Body) {
 					c <- message
 				}(channel)
 			}
-		case client := <- addChan:
+		case client := <-addChan:
 			log.Print("Client connected: ", client)
 			channels[client] = client.Channel
-		case client := <- removeChan:
+		case client := <-removeChan:
 			log.Print("Client disconnected: ", client)
 			delete(channels, client)
 		}
