@@ -21,6 +21,7 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.WriteHeader(200)
 
 	channel := make(chan Body)
@@ -43,6 +44,8 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 func PostMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	body, _ := ioutil.ReadAll(r.Body)
 
